@@ -41,7 +41,9 @@ kubectl expose deployment flask-cluster --type=LoadBalancer --port 80 --target-p
 
 ---
 sudo docker kill $(sudo docker ps -aq)
+
 sudo docker system prune
 
 sudo docker build -t doom-fire:1 .
+
 sudo docker run --name doom-fire -d -p 8080:80 doom-fire:1
