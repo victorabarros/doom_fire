@@ -1,5 +1,5 @@
 FROM nginx:1.17
-COPY code/ /usr/share/nginx/html
+COPY . /usr/share/nginx/html
 
 # WORKDIR /code
 
