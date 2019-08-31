@@ -1,78 +1,64 @@
-https://www.youtube.com/watch?v=fxm8cadCqbs&t=618s
+# Doom Fire code and Deploy on GKE form GCP with Docker
 
-sudo docker build -t doom-fire:beta1.0 .
-sudo docker image ls
-sudo docker run -d -p 5000:5000 doom-fire:beta1.0
+---
+## Windows local
 
-http://www.ricardomartins.com.br/docker-tutorial-mao-na-massa/
-
-docker run --name nginx -v .:/usr/share/nginx/html:ro -d nginx
-
-
-`docker build -t flask-hello:v2.0 .`
-
-`docker image ls`
-
-output:
+##### Clean up all containers and images
 ```shell
-REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE
-flask-hello                      v2.0                09c3d0310bd9        7 seconds ago       188MB
+docker rm -f $(docker ps -aq)
+docker rmi -f $(docker image ls -aq)
 ```
 
-`docker run -d -p 5000:5000 flask-hello:v2.0`
+##### Double check
+```shell
+docker ps -a && docker image ls -a
+```
 
----------------
-Steps from https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
+##### Build new image from Dockerfile and run local
+```shell
+docker build --rm -t doom-image:2 .
+docker run --rm --name doom-fire -d -p 8080:80 doom-image:2
+docker ps -a && docker image ls -a
+```
 
-`export PROJECT_ID=[dataflow-test-11]`
+##### Double check
+```shell
+docker ps -a && docker image ls -a
+curl localhost
+```
 
-`docker build -t gcr.io/${PROJECT_ID}/flask-hello:v2.0 .`
+##### To get inside of the docker container:
+```shell
+docker exec -it fb bash
+```
+---
+## GCP
 
-`docker push gcr.io/${PROJECT_ID}/flask-hello:v2.0`
+##### Build container
+```shell
+export PROJECT_ID=dataflow-test-11
+docker build --rm -t gcr.io/${PROJECT_ID}/doom-image:2 .
+gcloud auth configure-docker
+docker push gcr.io/${PROJECT_ID}/doom-image:2
+```
 
-`kubectl create deployment flask-cluster --image=gcr.io/${PROJECT_ID}/flask-hello:v2.0`
-
+##### Create container cluster
+```shell
 gcloud config set project $PROJECT_ID
 gcloud config set compute/zone us-central1-a
 
-gcloud container clusters create flask-cluster --num-nodes=2
+gcloud container clusters create doom-cluster --num-nodes=1
 
-kubectl expose deployment flask-cluster --type=LoadBalancer --port 80 --target-port 5000
+gcloud compute instances list
 
----
-sudo docker kill $(sudo docker ps -aq)
+kubectl create deployment doom-fire --image=gcr.io/${PROJECT_ID}/doom-image:2
+kubectl get pods
 
-sudo docker system prune
+kubectl expose deployment doom-fire --type=LoadBalancer --port 80 --target-port 80
 
-sudo docker build --rm -t doom-image:1 .
+kubectl get service
+```
 
-sudo docker run --name doom-fire -d -p 8080:80 doom-image:1
-
----
-# windows-local:
-
-docker rm -f $(docker ps -aq)
-docker rmi -f $(docker image ls -aq)
-docker ps -a && docker image ls -a
-
-### output:
-CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-
-docker build --rm -t doom-image:1 . && docker run --rm --name doom-fire -d -p 80:80 doom-image:1
-docker ps -a && docker image ls -a
-
-### output:
-CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
-fb3c651a1332        doom-image:1        "nginx -g 'daemon of…"   44 seconds ago      Up 43 seconds       0.0.0.0:8080->80/tcp   doom-fire
-REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-doom-image          1                   41eb75a03ef7        7 minutes ago       126MB
-nginx               1.17                5a3221f0137b        2 weeks ago         126MB
-
-curl localhost
-
-### To get in on docker container:
-docker exec -it fb bash
-
-# GCP:
-
+##### Acknowledgment
+https://www.youtube.com/watch?v=fxm8cadCqbs&t=618s
+https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
