@@ -49,25 +49,30 @@ sudo docker build --rm -t doom-image:1 .
 sudo docker run --name doom-fire -d -p 8080:80 doom-image:1
 
 ---
-windows:
+# windows-local:
+
 docker rm -f $(docker ps -aq)
 docker rmi -f $(docker image ls -aq)
 docker ps -a && docker image ls -a
 
-output:
+### output:
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS              PORTS               NAMES
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 
-docker build --rm -t doom-image:1 .
-docker run --rm --name doom-fire -d -p 80:80 doom-image:1
+docker build --rm -t doom-image:1 . && docker run --rm --name doom-fire -d -p 80:80 doom-image:1
 docker ps -a && docker image ls -a
 
-output:
+### output:
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                  NAMES
 fb3c651a1332        doom-image:1        "nginx -g 'daemon of…"   44 seconds ago      Up 43 seconds       0.0.0.0:8080->80/tcp   doom-fire
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
 doom-image          1                   41eb75a03ef7        7 minutes ago       126MB
 nginx               1.17                5a3221f0137b        2 weeks ago         126MB
 
-To get in on docker container:
+curl localhost
+
+### To get in on docker container:
 docker exec -it fb bash
+
+# GCP:
+
