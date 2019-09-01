@@ -59,6 +59,9 @@ kubectl expose deployment doom-fire --type=LoadBalancer --port 80 --target-port 
 kubectl get service
 ```
 ---
+### Result
+http://34.67.95.61/
+---
 ### Acknowledgment
 https://www.youtube.com/watch?v=fxm8cadCqbs&t=618s
 https://cloud.google.com/kubernetes-engine/docs/tutorials/hello-app
