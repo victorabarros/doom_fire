@@ -46,7 +46,6 @@ docker push gcr.io/${PROJECT_ID}/doom-image:2
 ```shell
 gcloud config set project $PROJECT_ID
 gcloud config set compute/zone us-central1-a
-
 gcloud container clusters create doom-cluster --num-nodes=1
 
 gcloud compute instances list
